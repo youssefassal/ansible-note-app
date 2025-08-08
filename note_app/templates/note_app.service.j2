@@ -1,0 +1,13 @@
+[Unit]
+Description=Note Taking Flask App
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/home/ec2-user/note_app
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

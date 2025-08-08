@@ -1,0 +1,59 @@
+---
+# Install required packages
+- name: Install Python3, pip, and sqlite
+  yum:
+    name:
+      - python3
+      - python3-pip
+      - sqlite
+    state: present
+
+# Create application directory
+- name: Create application directory
+  file:
+    path: /home/ec2-user/note_app
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: '0755'
+
+# Copy application files
+- name: Copy app.py
+  copy:
+    src: app.py
+    dest: /home/ec2-user/note_app/app.py
+    owner: ec2-user
+    group: ec2-user
+    mode: '0755'
+
+- name: Copy requirements.txt
+  copy:
+    src: requirements.txt
+    dest: /home/ec2-user/note_app/requirements.txt
+    owner: ec2-user
+    group: ec2-user
+
+# Install Python dependencies
+- name: Install Python dependencies
+  pip:
+    requirements: /home/ec2-user/note_app/requirements.txt
+    executable: pip3
+
+# Create systemd service
+- name: Deploy systemd service for note_app
+  template:
+    src: note_app.service.j2
+    dest: /etc/systemd/system/note_app.service
+    mode: '0644'
+
+# Reload systemd and start service
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start note_app service
+  systemd:
+    name: note_app
+    enabled: yes
+    state: started
+
